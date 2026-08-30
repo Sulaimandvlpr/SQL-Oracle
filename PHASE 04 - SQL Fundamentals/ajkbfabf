@@ -1,6 +1,142 @@
-Iya, **query yang aku berikan untuk Phase 04 sudah diarahkan ke Oracle SQL**, bukan MySQL atau PostgreSQL.
+Siap. Kita **skip Phase 01–03 dulu** dan langsung membangun **Phase 04 — SQL Fundamentals**.
 
-Contohnya:
+Karena ini akan menjadi buku/repository yang kamu pelajari secara serius, aku sarankan Phase 04 jangan langsung berupa daftar syntax. Kita buat setiap bagian seperti dokumentasi teknis: **konsep → klasifikasi → syntax Oracle → contoh → kesalahan umum → best practice → latihan**.
+
+Aku juga sudah cek dokumentasi Oracle terbaru: **Oracle AI Database 26ai SQL Language Reference** dan **SQL Language Quick Reference 26ai** adalah referensi primer yang akan kita jadikan landasan syntax. Oracle sendiri menyatakan bahwa SQL-nya merupakan superset dari standar SQL ANSI/ISO. ([Oracle Docs][1])
+
+# Phase 04 — SQL Fundamentals
+
+```text
+PHASE 04
+SQL FUNDAMENTALS
+│
+├── 04.01 — Introduction to SQL
+│
+├── 04.02 — SQL Statement Classification
+│   ├── DDL
+│   ├── DML
+│   ├── DQL
+│   ├── TCL
+│   └── DCL
+│
+├── 04.03 — DDL
+│   ├── CREATE
+│   ├── ALTER
+│   ├── DROP
+│   ├── TRUNCATE
+│   ├── RENAME
+│   └── COMMENT
+│
+├── 04.04 — DML
+│   ├── INSERT
+│   ├── UPDATE
+│   ├── DELETE
+│   └── MERGE
+│
+├── 04.05 — DQL / SELECT
+│   ├── SELECT
+│   ├── FROM
+│   ├── WHERE
+│   ├── DISTINCT
+│   ├── ORDER BY
+│   ├── FETCH
+│   └── OFFSET
+│
+├── 04.06 — SQL Operators & Conditions
+│   ├── Arithmetic
+│   ├── Comparison
+│   ├── Logical
+│   ├── BETWEEN
+│   ├── IN
+│   ├── LIKE
+│   ├── IS NULL
+│   └── EXISTS
+│
+├── 04.07 — TCL
+│   ├── COMMIT
+│   ├── ROLLBACK
+│   └── SAVEPOINT
+│
+└── 04.08 — DCL
+    ├── GRANT
+    └── REVOKE
+```
+
+---
+
+# 04.01 — Introduction to SQL
+
+## Definition
+
+**SQL (Structured Query Language)** adalah bahasa yang digunakan untuk berinteraksi dengan database, termasuk untuk mendefinisikan struktur database, mengambil data, memanipulasi data, mengelola transaksi, dan mengatur akses.
+
+Dalam repository ini, implementasi SQL yang digunakan adalah **Oracle SQL**.
+
+Oracle SQL digunakan untuk mengelola informasi dalam Oracle Database. Dokumentasi resmi Oracle menyediakan SQL Language Reference sebagai referensi lengkap terhadap bahasa SQL Oracle. ([Oracle Docs][1])
+
+Contoh paling sederhana:
+
+```sql
+SELECT *
+FROM employees;
+```
+
+Query tersebut meminta Oracle untuk mengambil seluruh kolom dan baris dari tabel `employees`.
+
+---
+
+# 04.02 — SQL Statement Classification
+
+Untuk memahami SQL dengan baik, kita perlu mengetahui bahwa statement SQL dapat dikelompokkan berdasarkan fungsinya.
+
+```text
+SQL
+│
+├── DDL — Data Definition Language
+│
+├── DML — Data Manipulation Language
+│
+├── DQL — Data Query Language
+│
+├── TCL — Transaction Control Language
+│
+└── DCL — Data Control Language
+```
+
+> **Catatan:** DQL merupakan istilah yang umum digunakan dalam materi pembelajaran, tetapi tidak selalu dipisahkan sebagai kategori tersendiri. `SELECT` sering dibahas sebagai bagian dari SQL query/DML dalam berbagai referensi.
+
+---
+
+# 04.03 — DDL
+
+## Data Definition Language
+
+DDL digunakan untuk mendefinisikan dan mengubah **struktur objek database**.
+
+Perintah utama:
+
+```text
+CREATE
+ALTER
+DROP
+TRUNCATE
+RENAME
+COMMENT
+```
+
+Contoh objek yang dapat dikelola antara lain:
+
+```text
+TABLE
+VIEW
+INDEX
+SEQUENCE
+SYNONYM
+```
+
+### CREATE
+
+Membuat objek database.
 
 ```sql
 CREATE TABLE mahasiswa (
@@ -10,15 +146,302 @@ CREATE TABLE mahasiswa (
 );
 ```
 
-`NUMBER` dan `VARCHAR2` adalah tipe data yang umum digunakan di Oracle.
+Oracle mendefinisikan table sebagai struktur dasar untuk menyimpan data user. `CREATE TABLE` digunakan untuk membuat tabel tersebut. ([Oracle Docs][2])
 
-Beberapa syntax yang juga memang Oracle:
+### ALTER
+
+Mengubah struktur objek yang sudah ada.
+
+```sql
+ALTER TABLE mahasiswa
+ADD email VARCHAR2(100);
+```
+
+### DROP
+
+Menghapus objek database.
+
+```sql
+DROP TABLE mahasiswa;
+```
+
+### TRUNCATE
+
+Menghapus seluruh data dari tabel tanpa menghapus struktur tabel.
+
+```sql
+TRUNCATE TABLE mahasiswa;
+```
+
+### RENAME
+
+Mengubah nama objek.
+
+```sql
+RENAME mahasiswa TO mahasiswa_aktif;
+```
+
+### COMMENT
+
+Memberikan deskripsi pada objek database.
+
+```sql
+COMMENT ON TABLE mahasiswa
+IS 'Data mahasiswa aktif';
+```
+
+---
+
+# 04.04 — DML
+
+## Data Manipulation Language
+
+DML digunakan untuk **memanipulasi data yang terdapat di dalam tabel**.
+
+Perintah utama:
+
+```text
+INSERT
+UPDATE
+DELETE
+MERGE
+```
+
+### INSERT
+
+Menambahkan baris baru.
+
+```sql
+INSERT INTO mahasiswa (
+    nim,
+    nama,
+    umur
+)
+VALUES (
+    2507411018,
+    'Budi',
+    20
+);
+```
+
+### UPDATE
+
+Mengubah data yang sudah ada.
+
+```sql
+UPDATE mahasiswa
+SET umur = 21
+WHERE nim = 2507411018;
+```
+
+**Perhatikan `WHERE`.**
+
+Tanpa `WHERE`:
+
+```sql
+UPDATE mahasiswa
+SET umur = 21;
+```
+
+seluruh baris dalam tabel dapat berubah.
+
+---
+
+### DELETE
+
+Menghapus data.
+
+```sql
+DELETE FROM mahasiswa
+WHERE nim = 2507411018;
+```
+
+Tanpa `WHERE`:
+
+```sql
+DELETE FROM mahasiswa;
+```
+
+seluruh row dapat dihapus.
+
+---
+
+### MERGE
+
+`MERGE` digunakan ketika kita ingin melakukan operasi berdasarkan apakah data sudah tersedia atau belum.
+
+Secara konsep:
+
+```text
+Data ditemukan
+      ↓
+   UPDATE
+
+Data tidak ditemukan
+      ↓
+   INSERT
+```
+
+Oracle menyediakan `MERGE` sebagai SQL statement untuk menggabungkan operasi tersebut berdasarkan kondisi tertentu.
+
+---
+
+# 04.05 — DQL / SELECT
+
+Ini akan menjadi **bagian terbesar dari SQL Fundamentals**, karena kemampuan mengambil dan menganalisis data merupakan inti penggunaan SQL.
+
+Struktur dasar:
+
+```sql
+SELECT column
+FROM table;
+```
+
+Contoh:
+
+```sql
+SELECT nama
+FROM mahasiswa;
+```
+
+Beberapa komponen penting:
+
+```text
+SELECT
+FROM
+WHERE
+DISTINCT
+ORDER BY
+FETCH
+OFFSET
+```
+
+Kemudian pada phase berikutnya kita akan memperluasnya dengan:
+
+```text
+GROUP BY
+HAVING
+JOIN
+SUBQUERY
+CTE
+WINDOW FUNCTION
+```
+
+---
+
+## SELECT
+
+Mengambil data.
+
+```sql
+SELECT *
+FROM mahasiswa;
+```
+
+Lebih baik dalam query production untuk menyebutkan kolom yang memang diperlukan:
+
+```sql
+SELECT nim, nama, umur
+FROM mahasiswa;
+```
+
+---
+
+## FROM
+
+Menentukan sumber data.
+
+```sql
+SELECT nama
+FROM mahasiswa;
+```
+
+`mahasiswa` adalah sumber data.
+
+---
+
+## WHERE
+
+Memfilter row berdasarkan kondisi.
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE umur >= 20;
+```
+
+Oracle SQL conditions digunakan untuk membentuk kondisi yang menghasilkan `TRUE`, `FALSE`, atau kondisi unknown. ([Oracle Docs][3])
+
+---
+
+## DISTINCT
+
+Menghilangkan duplikasi hasil.
+
+```sql
+SELECT DISTINCT umur
+FROM mahasiswa;
+```
+
+Misalnya data:
+
+```text
+20
+20
+21
+22
+22
+```
+
+hasil:
+
+```text
+20
+21
+22
+```
+
+---
+
+## ORDER BY
+
+Mengurutkan hasil.
+
+Ascending:
+
+```sql
+SELECT *
+FROM mahasiswa
+ORDER BY umur ASC;
+```
+
+Descending:
+
+```sql
+SELECT *
+FROM mahasiswa
+ORDER BY umur DESC;
+```
+
+`ASC` adalah default.
+
+---
+
+## FETCH
+
+Membatasi jumlah row yang dikembalikan.
 
 ```sql
 SELECT *
 FROM mahasiswa
 FETCH FIRST 5 ROWS ONLY;
 ```
+
+---
+
+## OFFSET
+
+Melewati sejumlah row sebelum mengambil hasil.
 
 ```sql
 SELECT *
@@ -27,65 +450,309 @@ OFFSET 5 ROWS
 FETCH NEXT 5 ROWS ONLY;
 ```
 
-Dan:
+Konsep ini nantinya sangat berguna ketika membahas **pagination** pada aplikasi.
+
+---
+
+# 04.06 — SQL Operators & Conditions
+
+Bagian ini menurutku **wajib dibuat sebagai chapter sendiri**, karena hampir semua query `WHERE` akan menggunakan operator.
+
+## Arithmetic Operators
+
+```text
++
+-
+*
+/
+```
+
+Contoh:
 
 ```sql
-RENAME mahasiswa TO mahasiswa_aktif;
+SELECT harga * jumlah AS total
+FROM transaksi;
 ```
 
-### Tapi ada satu hal penting
+---
 
-Kita perlu membedakan **SQL standar** dengan **Oracle-specific SQL**.
-
-Misalnya:
-
-| Query/konsep     | Oracle          |
-| ---------------- | --------------- |
-| `SELECT`         | Ya              |
-| `INSERT`         | Ya              |
-| `UPDATE`         | Ya              |
-| `DELETE`         | Ya              |
-| `CREATE TABLE`   | Ya              |
-| `ALTER TABLE`    | Ya              |
-| `DROP TABLE`     | Ya              |
-| `TRUNCATE TABLE` | Ya              |
-| `MERGE`          | Ya              |
-| `COMMIT`         | Ya              |
-| `ROLLBACK`       | Ya              |
-| `SAVEPOINT`      | Ya              |
-| `GRANT`          | Ya              |
-| `REVOKE`         | Ya              |
-| `VARCHAR2`       | Oracle-specific |
-| `NUMBER`         | Oracle-specific |
-| `SYSDATE`        | Oracle-specific |
-| `NVL()`          | Oracle-specific |
-| `MINUS`          | Oracle-specific |
-| `ROWNUM`         | Oracle-specific |
-
-Jadi untuk **buku kamu**, aku sarankan kita menggunakan aturan:
-
-> **Semua query harus valid untuk Oracle Database terlebih dahulu.**
-
-Kalau ada syntax yang merupakan **Oracle-specific**, kita beri label:
+## Comparison Operators
 
 ```text
-[ORACLE-SPECIFIC]
+=
+<>
+!=
+>
+<
+>=
+<=
 ```
 
-Kalau merupakan SQL yang umum/standar:
+Contoh:
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE umur >= 20;
+```
+
+---
+
+## Logical Operators
 
 ```text
-[SQL STANDARD]
+AND
+OR
+NOT
 ```
 
-Kalau syntax berbeda antara Oracle dan DBMS lain:
+Contoh:
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE umur >= 20
+AND status = 'Aktif';
+```
+
+---
+
+## BETWEEN
+
+Mencari nilai dalam rentang tertentu.
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE umur BETWEEN 18 AND 22;
+```
+
+---
+
+## IN
+
+Mencocokkan nilai dengan beberapa kemungkinan.
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE jurusan IN ('TI', 'SI', 'TK');
+```
+
+---
+
+## LIKE
+
+Melakukan pencarian berdasarkan pola.
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE nama LIKE 'A%';
+```
+
+`%` berarti sejumlah karakter.
 
 ```text
-[ORACLE NOTE]
+'A%'      → dimulai dengan A
+'%a'      → diakhiri dengan a
+'%an%'    → mengandung "an"
 ```
 
-Dengan begitu kamu **tidak akan tercampur dengan syntax MySQL/PostgreSQL** saat belajar.
+---
 
-Dan satu koreksi kecil dari struktur sebelumnya: **`EXISTS` lebih tepat kita bahas di bagian kondisi/subquery**, bukan sebagai statement DQL tersendiri. Jadi nanti struktur bukunya akan kita rapikan sambil jalan.
+## IS NULL
 
-Kalau kita lanjut, aku akan membuat **`04.01 — Introduction to SQL` khusus Oracle SQL**, lengkap dengan definisi, konsep, syntax, contoh query yang bisa langsung kamu jalankan di **Oracle SQL Developer**, dan referensi Oracle resminya.
+Mengecek apakah suatu nilai adalah `NULL`.
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE email IS NULL;
+```
+
+Jangan menggunakan:
+
+```sql
+WHERE email = NULL
+```
+
+karena `NULL` bukan nilai biasa yang dibandingkan menggunakan `=`.
+
+---
+
+# 04.07 — TCL
+
+## Transaction Control Language
+
+TCL digunakan untuk mengendalikan transaksi database.
+
+```text
+COMMIT
+ROLLBACK
+SAVEPOINT
+```
+
+### COMMIT
+
+Menyimpan perubahan transaksi.
+
+```sql
+COMMIT;
+```
+
+### ROLLBACK
+
+Membatalkan perubahan yang belum di-commit.
+
+```sql
+ROLLBACK;
+```
+
+### SAVEPOINT
+
+Membuat titik tertentu dalam transaksi.
+
+```sql
+SAVEPOINT sebelum_update;
+```
+
+Kemudian:
+
+```sql
+ROLLBACK TO sebelum_update;
+```
+
+---
+
+# 04.08 — DCL
+
+## Data Control Language
+
+DCL berkaitan dengan **privilege dan hak akses**.
+
+Perintah utama:
+
+```text
+GRANT
+REVOKE
+```
+
+### GRANT
+
+Memberikan privilege.
+
+```sql
+GRANT SELECT
+ON mahasiswa
+TO user1;
+```
+
+### REVOKE
+
+Mencabut privilege.
+
+```sql
+REVOKE SELECT
+ON mahasiswa
+FROM user1;
+```
+
+Bagian DCL nantinya akan kita perdalam ketika masuk ke **Database Security**, karena hak akses database tidak cukup dipahami hanya dari syntax `GRANT` dan `REVOKE`.
+
+---
+
+# Urutan Belajar Phase 04
+
+Aku sarankan kita **jangan menulis seluruh Phase 04 sekaligus**. Kita pecah menjadi episode supaya catatannya benar-benar matang:
+
+```text
+04.01 — Introduction to SQL
+04.02 — SQL Statement Classification
+
+04.03 — DDL
+       ├── CREATE
+       ├── ALTER
+       ├── DROP
+       ├── TRUNCATE
+       ├── RENAME
+       └── COMMENT
+
+04.04 — DML
+       ├── INSERT
+       ├── UPDATE
+       ├── DELETE
+       └── MERGE
+
+04.05 — SELECT Fundamentals
+       ├── SELECT
+       ├── FROM
+       ├── WHERE
+       ├── DISTINCT
+       ├── ORDER BY
+       ├── FETCH
+       └── OFFSET
+
+04.06 — Operators & Conditions
+       ├── Arithmetic
+       ├── Comparison
+       ├── Logical
+       ├── BETWEEN
+       ├── IN
+       ├── LIKE
+       ├── NULL
+       └── EXISTS
+
+04.07 — TCL
+       ├── COMMIT
+       ├── ROLLBACK
+       └── SAVEPOINT
+
+04.08 — DCL
+       ├── GRANT
+       └── REVOKE
+```
+
+Dan untuk **gaya penulisan buku**, kita gunakan pola tetap:
+
+```text
+# 04.xx — Topic
+
+## Definition
+Definisi konsep.
+
+## Why It Matters
+Kenapa konsep ini penting.
+
+## Syntax
+Syntax Oracle SQL.
+
+## Basic Example
+Contoh paling sederhana.
+
+## Understanding the Query
+Bedah query baris demi baris.
+
+## Real-World Example
+Kasus yang mendekati penggunaan profesional.
+
+## Common Mistakes
+Kesalahan umum.
+
+## Best Practices
+Praktik yang disarankan.
+
+## Oracle Notes
+Perilaku atau fitur khusus Oracle.
+
+## Practice
+Latihan.
+```
+
+Dengan begitu, **Phase 04 bukan sekadar "catatan SQL"**, tetapi benar-benar menjadi chapter pertama dari buku teknis kamu. Dan karena kita memakai dokumentasi Oracle 26ai sebagai sumber primer, syntax yang kita tulis akan kita validasi terhadap Oracle, bukan mengambil syntax MySQL/PostgreSQL lalu diasumsikan berlaku di Oracle. Oracle sendiri menyediakan SQL Language Reference lengkap dan Quick Reference khusus 26ai. ([Oracle Docs][1])
+
+**Langkah berikutnya paling tepat: `04.01 — Introduction to SQL`.** Kita bisa tulis chapter itu secara penuh dan rapi terlebih dahulu, baru lanjut ke DDL.
+
+[1]: https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/?utm_source=chatgpt.com "Oracle AI Database SQL Language Reference, 26ai"
+[2]: https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-TABLE.html?utm_source=chatgpt.com "CREATE TABLE"
+[3]: https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlqr/SQL-Conditions.html?utm_source=chatgpt.com "SQL Conditions"
