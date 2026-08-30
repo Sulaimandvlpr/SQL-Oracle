@@ -16,10 +16,6 @@
 
 Repository ini bukan sekadar kumpulan syntax SQL.
 
-Tujuan utamanya adalah membangun pemahaman dari:
-
-**Database Fundamentals → Relational Database → Database Design → SQL → Oracle SQL → Advanced SQL → PL/SQL → Performance → Security**
-
 Setiap materi dirancang agar tidak hanya menjawab:
 
 > "Apa syntax-nya?"
