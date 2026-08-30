@@ -1,0 +1,91 @@
+Iya, **query yang aku berikan untuk Phase 04 sudah diarahkan ke Oracle SQL**, bukan MySQL atau PostgreSQL.
+
+Contohnya:
+
+```sql
+CREATE TABLE mahasiswa (
+    nim NUMBER(10),
+    nama VARCHAR2(100),
+    umur NUMBER(3)
+);
+```
+
+`NUMBER` dan `VARCHAR2` adalah tipe data yang umum digunakan di Oracle.
+
+Beberapa syntax yang juga memang Oracle:
+
+```sql
+SELECT *
+FROM mahasiswa
+FETCH FIRST 5 ROWS ONLY;
+```
+
+```sql
+SELECT *
+FROM mahasiswa
+OFFSET 5 ROWS
+FETCH NEXT 5 ROWS ONLY;
+```
+
+Dan:
+
+```sql
+RENAME mahasiswa TO mahasiswa_aktif;
+```
+
+### Tapi ada satu hal penting
+
+Kita perlu membedakan **SQL standar** dengan **Oracle-specific SQL**.
+
+Misalnya:
+
+| Query/konsep     | Oracle          |
+| ---------------- | --------------- |
+| `SELECT`         | Ya              |
+| `INSERT`         | Ya              |
+| `UPDATE`         | Ya              |
+| `DELETE`         | Ya              |
+| `CREATE TABLE`   | Ya              |
+| `ALTER TABLE`    | Ya              |
+| `DROP TABLE`     | Ya              |
+| `TRUNCATE TABLE` | Ya              |
+| `MERGE`          | Ya              |
+| `COMMIT`         | Ya              |
+| `ROLLBACK`       | Ya              |
+| `SAVEPOINT`      | Ya              |
+| `GRANT`          | Ya              |
+| `REVOKE`         | Ya              |
+| `VARCHAR2`       | Oracle-specific |
+| `NUMBER`         | Oracle-specific |
+| `SYSDATE`        | Oracle-specific |
+| `NVL()`          | Oracle-specific |
+| `MINUS`          | Oracle-specific |
+| `ROWNUM`         | Oracle-specific |
+
+Jadi untuk **buku kamu**, aku sarankan kita menggunakan aturan:
+
+> **Semua query harus valid untuk Oracle Database terlebih dahulu.**
+
+Kalau ada syntax yang merupakan **Oracle-specific**, kita beri label:
+
+```text
+[ORACLE-SPECIFIC]
+```
+
+Kalau merupakan SQL yang umum/standar:
+
+```text
+[SQL STANDARD]
+```
+
+Kalau syntax berbeda antara Oracle dan DBMS lain:
+
+```text
+[ORACLE NOTE]
+```
+
+Dengan begitu kamu **tidak akan tercampur dengan syntax MySQL/PostgreSQL** saat belajar.
+
+Dan satu koreksi kecil dari struktur sebelumnya: **`EXISTS` lebih tepat kita bahas di bagian kondisi/subquery**, bukan sebagai statement DQL tersendiri. Jadi nanti struktur bukunya akan kita rapikan sambil jalan.
+
+Kalau kita lanjut, aku akan membuat **`04.01 — Introduction to SQL` khusus Oracle SQL**, lengkap dengan definisi, konsep, syntax, contoh query yang bisa langsung kamu jalankan di **Oracle SQL Developer**, dan referensi Oracle resminya.
