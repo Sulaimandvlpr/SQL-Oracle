@@ -1,0 +1,1432 @@
+Boleh. Karena ini akan jadi **buku belajar Oracle SQL versi kamu**, aku buat Phase 05 sebagai satu bagian utuh yang bisa langsung kamu masukkan ke repository. Aku juga akan tetap membedakan **single-row/scalar functions** dan **aggregate functions**, karena itu konsep penting di Oracle.
+
+# Phase 05 — SQL Functions
+
+```text
+PHASE 05
+SQL FUNCTIONS
+│
+├── 05.01 — Introduction to SQL Functions
+│
+├── 05.02 — Character Functions
+│   ├── UPPER()
+│   ├── LOWER()
+│   ├── INITCAP()
+│   ├── LENGTH()
+│   ├── SUBSTR()
+│   ├── INSTR()
+│   ├── REPLACE()
+│   ├── TRIM()
+│   ├── LTRIM()
+│   └── RTRIM()
+│
+├── 05.03 — Number Functions
+│   ├── ROUND()
+│   ├── TRUNC()
+│   ├── CEIL()
+│   ├── FLOOR()
+│   ├── MOD()
+│   └── ABS()
+│
+├── 05.04 — Date & Time Functions
+│   ├── SYSDATE
+│   ├── SYSTIMESTAMP
+│   ├── ADD_MONTHS()
+│   ├── MONTHS_BETWEEN()
+│   ├── NEXT_DAY()
+│   ├── LAST_DAY()
+│   └── Date Arithmetic
+│
+├── 05.05 — Conversion Functions
+│   ├── TO_CHAR()
+│   ├── TO_DATE()
+│   └── TO_NUMBER()
+│
+├── 05.06 — NULL Functions
+│   ├── NVL()
+│   ├── NVL2()
+│   ├── NULLIF()
+│   └── COALESCE()
+│
+└── 05.07 — Aggregate Functions
+    ├── COUNT()
+    ├── SUM()
+    ├── AVG()
+    ├── MIN()
+    └── MAX()
+```
+
+---
+
+# 05.01 — Introduction to SQL Functions
+
+## Definition
+
+**SQL Function** adalah fungsi yang digunakan untuk melakukan operasi atau transformasi terhadap data dan menghasilkan suatu nilai.
+
+Dalam Oracle SQL, function dapat digunakan dalam berbagai bagian query, terutama `SELECT`, `WHERE`, `ORDER BY`, dan `GROUP BY`.
+
+Contoh:
+
+```sql
+SELECT UPPER(nama)
+FROM mahasiswa;
+```
+
+Jika:
+
+```text
+nama
+----------
+Budi
+Andi
+Siti
+```
+
+hasilnya:
+
+```text
+UPPER(NAMA)
+-----------
+BUDI
+ANDI
+SITI
+```
+
+---
+
+## Mengapa SQL Functions Penting?
+
+Tanpa function, banyak proses pengolahan data harus dilakukan di aplikasi.
+
+Dengan SQL function, database dapat melakukan transformasi data secara langsung.
+
+Contoh kebutuhan nyata:
+
+```text
+Data mentah
+     ↓
+UPPER()
+     ↓
+Standarisasi nama
+```
+
+atau:
+
+```text
+Tanggal lahir
+     ↓
+MONTHS_BETWEEN()
+     ↓
+Menghitung usia
+```
+
+atau:
+
+```text
+Harga × Jumlah
+     ↓
+SUM()
+     ↓
+Total penjualan
+```
+
+---
+
+# 05.02 — Classification of SQL Functions
+
+Secara umum, function yang akan kita pelajari dapat dibagi menjadi dua kelompok utama:
+
+```text
+SQL FUNCTIONS
+│
+├── Single-Row Functions
+│   ├── Character
+│   ├── Number
+│   ├── Date
+│   ├── Conversion
+│   └── NULL
+│
+└── Aggregate Functions
+    ├── COUNT()
+    ├── SUM()
+    ├── AVG()
+    ├── MIN()
+    └── MAX()
+```
+
+---
+
+# Single-Row Functions
+
+**Single-row function** memproses setiap row secara individual dan menghasilkan satu nilai untuk setiap row.
+
+Contoh:
+
+```sql
+SELECT nama,
+       UPPER(nama) AS nama_upper
+FROM mahasiswa;
+```
+
+Jika terdapat 3 row:
+
+```text
+Budi
+Andi
+Siti
+```
+
+function diproses terhadap masing-masing row:
+
+```text
+Budi → BUDI
+Andi → ANDI
+Siti → SITI
+```
+
+---
+
+# Aggregate Functions
+
+**Aggregate function** bekerja terhadap sekumpulan row dan menghasilkan satu nilai hasil agregasi.
+
+Contoh:
+
+```sql
+SELECT AVG(umur)
+FROM mahasiswa;
+```
+
+Jika umur:
+
+```text
+20
+21
+19
+22
+```
+
+maka:
+
+```text
+AVG = 20.5
+```
+
+Aggregate functions akan menjadi lebih penting ketika kita masuk ke:
+
+```text
+GROUP BY
+HAVING
+```
+
+pada phase berikutnya.
+
+---
+
+# 05.03 — Character Functions
+
+Character functions digunakan untuk memproses **data berbentuk karakter/string**.
+
+---
+
+## UPPER()
+
+Mengubah seluruh karakter menjadi huruf besar.
+
+```sql
+SELECT UPPER('oracle sql')
+FROM dual;
+```
+
+Hasil:
+
+```text
+ORACLE SQL
+```
+
+Contoh dengan tabel:
+
+```sql
+SELECT UPPER(nama) AS nama
+FROM mahasiswa;
+```
+
+---
+
+## LOWER()
+
+Mengubah seluruh karakter menjadi huruf kecil.
+
+```sql
+SELECT LOWER('ORACLE SQL')
+FROM dual;
+```
+
+Hasil:
+
+```text
+oracle sql
+```
+
+---
+
+## INITCAP()
+
+Mengubah huruf pertama setiap kata menjadi uppercase.
+
+```sql
+SELECT INITCAP('oracle sql database')
+FROM dual;
+```
+
+Hasil:
+
+```text
+Oracle Sql Database
+```
+
+---
+
+## LENGTH()
+
+Menghitung jumlah karakter.
+
+```sql
+SELECT LENGTH('Oracle')
+FROM dual;
+```
+
+Hasil:
+
+```text
+6
+```
+
+Contoh:
+
+```sql
+SELECT nama,
+       LENGTH(nama) AS panjang_nama
+FROM mahasiswa;
+```
+
+---
+
+## SUBSTR()
+
+Mengambil sebagian karakter dari sebuah string.
+
+Syntax:
+
+```text
+SUBSTR(string, posisi_awal, jumlah_karakter)
+```
+
+Contoh:
+
+```sql
+SELECT SUBSTR('ORACLE', 1, 3)
+FROM dual;
+```
+
+Hasil:
+
+```text
+ORA
+```
+
+Oracle menggunakan posisi karakter yang dimulai dari **1**.
+
+---
+
+## INSTR()
+
+Mencari posisi kemunculan suatu karakter atau substring.
+
+```sql
+SELECT INSTR('ORACLE SQL', 'SQL')
+FROM dual;
+```
+
+Hasil menunjukkan posisi awal `SQL`.
+
+---
+
+## REPLACE()
+
+Mengganti substring tertentu dengan substring lainnya.
+
+```sql
+SELECT REPLACE(
+    'Oracle Database',
+    'Database',
+    'SQL'
+)
+FROM dual;
+```
+
+Hasil:
+
+```text
+Oracle SQL
+```
+
+---
+
+## TRIM()
+
+Menghapus karakter tertentu dari awal dan/atau akhir string. Penggunaan paling umum adalah menghapus spasi.
+
+```sql
+SELECT TRIM('   Oracle SQL   ')
+FROM dual;
+```
+
+Hasil:
+
+```text
+Oracle SQL
+```
+
+---
+
+## LTRIM()
+
+Menghapus karakter/spasi dari sisi kiri.
+
+```sql
+SELECT LTRIM('   Oracle')
+FROM dual;
+```
+
+---
+
+## RTRIM()
+
+Menghapus karakter/spasi dari sisi kanan.
+
+```sql
+SELECT RTRIM('Oracle   ')
+FROM dual;
+```
+
+---
+
+# 05.04 — Number Functions
+
+Number functions digunakan untuk melakukan operasi terhadap **angka**.
+
+---
+
+## ROUND()
+
+Membulatkan angka.
+
+```sql
+SELECT ROUND(125.678, 2)
+FROM dual;
+```
+
+Hasil:
+
+```text
+125.68
+```
+
+Tanpa jumlah digit:
+
+```sql
+SELECT ROUND(125.678)
+FROM dual;
+```
+
+Hasil:
+
+```text
+126
+```
+
+---
+
+## TRUNC()
+
+Memotong angka tanpa melakukan pembulatan.
+
+```sql
+SELECT TRUNC(125.678, 2)
+FROM dual;
+```
+
+Hasil:
+
+```text
+125.67
+```
+
+Perbedaan penting:
+
+```text
+ROUND(125.678, 2) → 125.68
+TRUNC(125.678, 2) → 125.67
+```
+
+---
+
+## CEIL()
+
+Menghasilkan bilangan bulat terkecil yang lebih besar atau sama dengan angka tersebut.
+
+```sql
+SELECT CEIL(10.3)
+FROM dual;
+```
+
+Hasil:
+
+```text
+11
+```
+
+---
+
+## FLOOR()
+
+Menghasilkan bilangan bulat terbesar yang lebih kecil atau sama dengan angka tersebut.
+
+```sql
+SELECT FLOOR(10.9)
+FROM dual;
+```
+
+Hasil:
+
+```text
+10
+```
+
+---
+
+## MOD()
+
+Menghasilkan sisa hasil pembagian.
+
+```sql
+SELECT MOD(10, 3)
+FROM dual;
+```
+
+Hasil:
+
+```text
+1
+```
+
+Contoh penggunaan:
+
+Menentukan bilangan genap:
+
+```sql
+SELECT *
+FROM mahasiswa
+WHERE MOD(nim, 2) = 0;
+```
+
+---
+
+## ABS()
+
+Menghasilkan nilai absolut.
+
+```sql
+SELECT ABS(-100)
+FROM dual;
+```
+
+Hasil:
+
+```text
+100
+```
+
+---
+
+# 05.05 — Date & Time Functions
+
+Oracle memiliki beberapa tipe data untuk menyimpan informasi tanggal dan waktu, seperti `DATE` dan `TIMESTAMP`.
+
+Function yang umum digunakan:
+
+```text
+SYSDATE
+SYSTIMESTAMP
+ADD_MONTHS()
+MONTHS_BETWEEN()
+NEXT_DAY()
+LAST_DAY()
+```
+
+---
+
+## SYSDATE
+
+Menghasilkan tanggal dan waktu dari database server.
+
+```sql
+SELECT SYSDATE
+FROM dual;
+```
+
+---
+
+## SYSTIMESTAMP
+
+Menghasilkan timestamp dengan informasi waktu yang lebih detail dibandingkan `DATE`.
+
+```sql
+SELECT SYSTIMESTAMP
+FROM dual;
+```
+
+---
+
+## ADD_MONTHS()
+
+Menambahkan sejumlah bulan ke sebuah tanggal.
+
+```sql
+SELECT ADD_MONTHS(
+    DATE '2026-01-15',
+    3
+)
+FROM dual;
+```
+
+Hasil:
+
+```text
+15-APR-2026
+```
+
+---
+
+## MONTHS_BETWEEN()
+
+Menghitung jumlah bulan antara dua tanggal.
+
+```sql
+SELECT MONTHS_BETWEEN(
+    DATE '2026-07-01',
+    DATE '2026-01-01'
+)
+FROM dual;
+```
+
+---
+
+## NEXT_DAY()
+
+Mencari tanggal berikutnya berdasarkan nama hari tertentu.
+
+```sql
+SELECT NEXT_DAY(
+    DATE '2026-08-30',
+    'MONDAY'
+)
+FROM dual;
+```
+
+---
+
+## LAST_DAY()
+
+Menghasilkan tanggal terakhir pada bulan tertentu.
+
+```sql
+SELECT LAST_DAY(
+    DATE '2026-08-15'
+)
+FROM dual;
+```
+
+---
+
+## Date Arithmetic
+
+Oracle memungkinkan operasi aritmatika terhadap `DATE`.
+
+Contoh:
+
+```sql
+SELECT SYSDATE + 7
+FROM dual;
+```
+
+Artinya menambahkan **7 hari**.
+
+```sql
+SELECT SYSDATE - 7
+FROM dual;
+```
+
+Artinya mengurangi **7 hari**.
+
+Perbedaan dua tanggal juga dapat menghasilkan jumlah hari.
+
+```sql
+SELECT DATE '2026-08-30' - DATE '2026-08-20'
+FROM dual;
+```
+
+Hasil:
+
+```text
+10
+```
+
+---
+
+# 05.06 — Conversion Functions
+
+Conversion functions digunakan untuk mengubah data dari satu tipe ke tipe lainnya.
+
+Tiga function utama:
+
+```text
+TO_CHAR()
+TO_DATE()
+TO_NUMBER()
+```
+
+---
+
+## TO_CHAR()
+
+Mengubah nilai menjadi karakter.
+
+### Number
+
+```sql
+SELECT TO_CHAR(
+    1250000,
+    '999G999G999'
+)
+FROM dual;
+```
+
+### Date
+
+```sql
+SELECT TO_CHAR(
+    SYSDATE,
+    'DD-MM-YYYY'
+)
+FROM dual;
+```
+
+Format yang sering digunakan:
+
+```text
+DD      → Day
+MM      → Month
+YYYY    → Year
+HH24    → Hour
+MI      → Minute
+SS      → Second
+```
+
+Contoh:
+
+```sql
+SELECT TO_CHAR(
+    SYSDATE,
+    'DD MONTH YYYY'
+)
+FROM dual;
+```
+
+---
+
+## TO_DATE()
+
+Mengubah string menjadi tipe `DATE`.
+
+```sql
+SELECT TO_DATE(
+    '30-08-2026',
+    'DD-MM-YYYY'
+)
+FROM dual;
+```
+
+Format input harus sesuai dengan format yang diberikan.
+
+---
+
+## TO_NUMBER()
+
+Mengubah string menjadi angka.
+
+```sql
+SELECT TO_NUMBER('1000')
+FROM dual;
+```
+
+---
+
+# 05.07 — NULL Functions
+
+`NULL` menunjukkan bahwa sebuah nilai **tidak tersedia atau tidak diketahui**.
+
+Oracle memiliki beberapa function untuk menangani `NULL`.
+
+```text
+NVL()
+NVL2()
+NULLIF()
+COALESCE()
+```
+
+---
+
+## NVL()
+
+Menggantikan `NULL` dengan nilai tertentu.
+
+Syntax:
+
+```text
+NVL(expression, replacement)
+```
+
+Contoh:
+
+```sql
+SELECT NVL(commission_pct, 0)
+FROM employees;
+```
+
+Jika:
+
+```text
+commission_pct = NULL
+```
+
+hasilnya:
+
+```text
+0
+```
+
+---
+
+## NVL2()
+
+Menghasilkan nilai berbeda berdasarkan apakah expression bernilai `NULL` atau tidak.
+
+Syntax:
+
+```text
+NVL2(expression, value_if_not_null, value_if_null)
+```
+
+Contoh:
+
+```sql
+SELECT NVL2(
+    commission_pct,
+    'Has Commission',
+    'No Commission'
+)
+FROM employees;
+```
+
+---
+
+## NULLIF()
+
+Menghasilkan `NULL` apabila dua expression memiliki nilai yang sama.
+
+```sql
+SELECT NULLIF(10, 10)
+FROM dual;
+```
+
+Hasil:
+
+```text
+NULL
+```
+
+Jika berbeda:
+
+```sql
+SELECT NULLIF(10, 20)
+FROM dual;
+```
+
+hasil:
+
+```text
+10
+```
+
+---
+
+## COALESCE()
+
+Mengembalikan expression pertama yang **tidak bernilai `NULL`**.
+
+```sql
+SELECT COALESCE(
+    NULL,
+    NULL,
+    'Oracle',
+    'SQL'
+)
+FROM dual;
+```
+
+Hasil:
+
+```text
+Oracle
+```
+
+Contoh penggunaan:
+
+```sql
+SELECT COALESCE(
+    mobile_phone,
+    home_phone,
+    office_phone,
+    'No Phone'
+)
+FROM employees;
+```
+
+Oracle akan mencari nilai pertama yang tidak `NULL`.
+
+---
+
+# 05.08 — Aggregate Functions
+
+Aggregate functions digunakan untuk melakukan perhitungan terhadap **sekumpulan row**.
+
+Function utama:
+
+```text
+COUNT()
+SUM()
+AVG()
+MIN()
+MAX()
+```
+
+---
+
+## COUNT()
+
+Menghitung jumlah row.
+
+```sql
+SELECT COUNT(*)
+FROM employees;
+```
+
+### COUNT(column)
+
+```sql
+SELECT COUNT(commission_pct)
+FROM employees;
+```
+
+Perhatikan bahwa `COUNT(column)` tidak menghitung nilai `NULL`.
+
+---
+
+## SUM()
+
+Menghitung total nilai numerik.
+
+```sql
+SELECT SUM(salary)
+FROM employees;
+```
+
+---
+
+## AVG()
+
+Menghitung nilai rata-rata.
+
+```sql
+SELECT AVG(salary)
+FROM employees;
+```
+
+---
+
+## MIN()
+
+Mencari nilai terkecil.
+
+```sql
+SELECT MIN(salary)
+FROM employees;
+```
+
+---
+
+## MAX()
+
+Mencari nilai terbesar.
+
+```sql
+SELECT MAX(salary)
+FROM employees;
+```
+
+---
+
+# Aggregate Function + GROUP BY
+
+Aggregate function akan menjadi jauh lebih berguna ketika dikombinasikan dengan `GROUP BY`.
+
+Contoh:
+
+```sql
+SELECT department_id,
+       AVG(salary) AS average_salary
+FROM employees
+GROUP BY department_id;
+```
+
+Konsepnya:
+
+```text
+EMPLOYEES
+    ↓
+GROUP BY department
+    ↓
+AVG(salary)
+    ↓
+Average salary setiap department
+```
+
+Ini akan menjadi dasar untuk pembahasan **GROUP BY dan HAVING** pada phase berikutnya.
+
+---
+
+# Single-Row vs Aggregate Function
+
+Perbedaan ini **wajib dipahami**.
+
+| Single-Row Function             | Aggregate Function                   |
+| ------------------------------- | ------------------------------------ |
+| Memproses setiap row            | Memproses sekumpulan row             |
+| Menghasilkan satu nilai per row | Menghasilkan satu nilai per kelompok |
+| `UPPER()`                       | `COUNT()`                            |
+| `LOWER()`                       | `SUM()`                              |
+| `LENGTH()`                      | `AVG()`                              |
+| `ROUND()`                       | `MIN()`                              |
+| `TO_CHAR()`                     | `MAX()`                              |
+
+Contoh:
+
+### Single-row
+
+```sql
+SELECT nama,
+       UPPER(nama)
+FROM mahasiswa;
+```
+
+```text
+Budi → BUDI
+Andi → ANDI
+Siti → SITI
+```
+
+### Aggregate
+
+```sql
+SELECT AVG(umur)
+FROM mahasiswa;
+```
+
+```text
+20
+21
+19
+22
+ ↓
+20.5
+```
+
+---
+
+# Function Nesting
+
+Oracle memungkinkan function digunakan di dalam function lainnya.
+
+Contoh:
+
+```sql
+SELECT UPPER(
+           TRIM(nama)
+       )
+FROM mahasiswa;
+```
+
+Prosesnya:
+
+```text
+nama
+ ↓
+TRIM()
+ ↓
+UPPER()
+ ↓
+hasil
+```
+
+Contoh lainnya:
+
+```sql
+SELECT ROUND(
+           AVG(salary),
+           2
+       )
+FROM employees;
+```
+
+Proses:
+
+```text
+salary
+   ↓
+ AVG()
+   ↓
+ ROUND()
+   ↓
+hasil
+```
+
+Kemampuan menggabungkan function seperti ini akan sangat sering digunakan dalam query nyata.
+
+---
+
+# Real-World Example
+
+Misalkan sebuah perusahaan memiliki data:
+
+```text
+EMPLOYEES
+
+EMPLOYEE_ID | FIRST_NAME | SALARY
+------------|------------|-------
+101         | John       | 5000
+102         | Steven     | 6000
+103         | Lex        | 7000
+```
+
+Kita ingin membuat laporan:
+
+> "Tampilkan nama karyawan dalam uppercase dan gaji tahunan mereka."
+
+Query:
+
+```sql
+SELECT UPPER(first_name) AS employee_name,
+       salary * 12 AS annual_salary
+FROM employees;
+```
+
+Hasil:
+
+```text
+EMPLOYEE_NAME | ANNUAL_SALARY
+--------------|--------------
+JOHN          | 60000
+STEVEN        | 72000
+LEX           | 84000
+```
+
+Di sini kita sudah menggabungkan:
+
+```text
+UPPER()
++
+Arithmetic Operator
++
+SELECT
+```
+
+Ini merupakan pola yang jauh lebih dekat dengan penggunaan SQL dalam pekerjaan nyata dibandingkan sekadar menjalankan function satu per satu.
+
+---
+
+# Common Mistakes
+
+### 01 — Menggunakan `=` untuk NULL
+
+Salah:
+
+```sql
+WHERE commission_pct = NULL;
+```
+
+Benar:
+
+```sql
+WHERE commission_pct IS NULL;
+```
+
+---
+
+### 02 — Mengira `TRUNC()` sama dengan `ROUND()`
+
+```text
+ROUND(10.56) → 11
+TRUNC(10.56) → 10
+```
+
+`ROUND()` membulatkan.
+
+`TRUNC()` memotong.
+
+---
+
+### 03 — Lupa format pada TO_DATE()
+
+Misalnya:
+
+```sql
+TO_DATE('30-08-2026', 'YYYY-MM-DD')
+```
+
+Format tidak sesuai dengan string input.
+
+Lebih tepat:
+
+```sql
+TO_DATE('30-08-2026', 'DD-MM-YYYY')
+```
+
+---
+
+### 04 — Menganggap COUNT(*) dan COUNT(column) sama
+
+```sql
+COUNT(*)
+```
+
+menghitung row.
+
+Sedangkan:
+
+```sql
+COUNT(column)
+```
+
+tidak menghitung nilai `NULL` pada column tersebut.
+
+---
+
+# Best Practices
+
+### 01 — Gunakan Alias
+
+Daripada:
+
+```sql
+SELECT UPPER(first_name)
+FROM employees;
+```
+
+lebih jelas:
+
+```sql
+SELECT UPPER(first_name) AS employee_name
+FROM employees;
+```
+
+---
+
+### 02 — Jangan melakukan transformasi yang tidak diperlukan
+
+Jika data sudah tersimpan dalam format yang benar, tidak perlu melakukan function tambahan tanpa alasan.
+
+Query yang sederhana biasanya lebih mudah dipahami dan dipelihara.
+
+---
+
+### 03 — Perhatikan penggunaan function pada kolom yang difilter
+
+Contoh:
+
+```sql
+WHERE UPPER(first_name) = 'JOHN'
+```
+
+Penggunaan function pada kolom dapat berpengaruh terhadap pemanfaatan index dalam kondisi tertentu.
+
+Pembahasan ini akan kita dalami nanti pada **Phase Performance & Query Optimization**.
+
+---
+
+# Oracle Notes
+
+Oracle menyediakan banyak SQL functions di luar function yang dibahas dalam phase ini.
+
+Contohnya:
+
+```text
+Character Functions
+Numeric Functions
+Datetime Functions
+Conversion Functions
+General Comparison Functions
+Conditional Functions
+Aggregate Functions
+Analytic Functions
+Object Reference Functions
+JSON Functions
+XML Functions
+Regular Expression Functions
+```
+
+Karena itu, daftar pada Phase 05 merupakan **fondasi utama**, bukan seluruh function yang tersedia di Oracle Database.
+
+Referensi utama untuk daftar dan syntax function adalah **Oracle Database SQL Language Reference**. ([docs.oracle.com](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Functions.html?utm_source=chatgpt.com))
+
+---
+
+# Practice
+
+Gunakan tabel `employees` dari Oracle sample schema atau dataset latihan sendiri.
+
+### Beginner
+
+**01.** Tampilkan nama employee dalam uppercase.
+
+```sql
+SELECT UPPER(first_name)
+FROM employees;
+```
+
+**02.** Tampilkan panjang nama setiap employee.
+
+**03.** Tampilkan salary yang dibulatkan ke bilangan bulat.
+
+**04.** Tampilkan salary setelah ditambahkan 10%.
+
+**05.** Tampilkan tanggal hari ini menggunakan `SYSDATE`.
+
+### Intermediate
+
+**06.** Tampilkan nama employee dalam uppercase dan panjang namanya.
+
+**07.** Tampilkan salary tahunan setiap employee.
+
+**08.** Tampilkan tanggal hire dalam format:
+
+```text
+DD-MM-YYYY
+```
+
+**09.** Tampilkan employee yang memiliki nama lebih dari 6 karakter.
+
+**10.** Tampilkan rata-rata salary seluruh employee.
+
+### Advanced
+
+**11.** Tampilkan rata-rata salary setiap department.
+
+**12.** Tampilkan salary tertinggi dan terendah setiap department.
+
+**13.** Gunakan `NVL()` untuk menampilkan `0` apabila `commission_pct` bernilai `NULL`.
+
+**14.** Gunakan `COALESCE()` untuk mencari nomor telepon pertama yang tersedia.
+
+**15.** Buat laporan yang menampilkan:
+
+```text
+EMPLOYEE NAME
+ANNUAL SALARY
+SALARY CATEGORY
+```
+
+dengan kategori:
+
+```text
+< 50000       → LOW
+50000–100000  → MEDIUM
+> 100000      → HIGH
+```
+
+Untuk nomor 15, kamu akan membutuhkan `CASE`, yang akan kita bahas lebih dalam pada **Advanced SQL**.
+
+---
+
+# Phase 05 — Completion Checklist
+
+```text
+[ ] Memahami konsep SQL Function
+[ ] Memahami Single-Row Function
+[ ] Memahami Aggregate Function
+
+[ ] UPPER()
+[ ] LOWER()
+[ ] INITCAP()
+[ ] LENGTH()
+[ ] SUBSTR()
+[ ] INSTR()
+[ ] REPLACE()
+[ ] TRIM()
+[ ] LTRIM()
+[ ] RTRIM()
+
+[ ] ROUND()
+[ ] TRUNC()
+[ ] CEIL()
+[ ] FLOOR()
+[ ] MOD()
+[ ] ABS()
+
+[ ] SYSDATE
+[ ] SYSTIMESTAMP
+[ ] ADD_MONTHS()
+[ ] MONTHS_BETWEEN()
+[ ] NEXT_DAY()
+[ ] LAST_DAY()
+[ ] Date Arithmetic
+
+[ ] TO_CHAR()
+[ ] TO_DATE()
+[ ] TO_NUMBER()
+
+[ ] NVL()
+[ ] NVL2()
+[ ] NULLIF()
+[ ] COALESCE()
+
+[ ] COUNT()
+[ ] SUM()
+[ ] AVG()
+[ ] MIN()
+[ ] MAX()
+
+[ ] Function Nesting
+[ ] Function + WHERE
+[ ] Function + GROUP BY
+```
+
+### References
+
+* **Oracle AI Database 26ai — SQL Language Reference** — sumber utama untuk syntax dan behavior Oracle SQL. [Oracle SQL Language Reference 26ai](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/?utm_source=chatgpt.com)
+* **Oracle AI Database 26ai — SQL Functions Reference** — referensi function Oracle secara lebih spesifik. [Oracle SQL Functions Reference](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Functions.html?utm_source=chatgpt.com)
+* **Oracle Dev Gym — Databases for Developers** — latihan dan pembelajaran SQL Oracle secara hands-on. [Oracle Dev Gym](https://devgym.oracle.com/pls/apex/dg/class/databases-for-developers-foundations.html?utm_source=chatgpt.com)
+
+**Phase 05 selesai.** Setelah ini secara natural kita masuk ke **Phase 06 — Querying Multiple Tables**, dan di sana fokus besarnya adalah **JOIN**. Ini salah satu bagian paling penting dalam SQL karena mulai mengubah cara berpikir dari "mengambil data dari satu tabel" menjadi "mengambil informasi dari relational database".
